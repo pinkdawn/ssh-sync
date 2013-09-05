@@ -4,7 +4,7 @@ def current(proc):
     out, _ = proc.process(cmd)
     for line in out:
         if line and line.startswith('*'):
-            return line.replace('*', '').strip()
+            return line[1:].strip()
         
     return ''
 
@@ -18,8 +18,10 @@ def revert(proc):
     cmd = 'git checkout .'
     proc.process(cmd)
     
-    cmd = 'git clean -f'    # remove un-versioned files
+    cmd = 'git clean -f -d'    # remove un-versioned files
     proc.process(cmd)
+    
+    print 'reverted old changes'
     
 def track(proc, name):
     cmd = 'git checkout --track origin/%s' % name
@@ -32,12 +34,34 @@ def create(proc, name):
     proc.process(cmd)
     
     print 'create branch [%s]' % name
+
+def delete(proc, name):
+    cmd = 'git branch -D %s' % name
+    proc.process(cmd)
     
-def force_switch(proc, name):
-    revert(proc, name)
+    print 'deleted branch [%s]' % name
+
+def pull(proc):
+    cmd = 'git pull'    
+    proc.process(cmd)
+
+def forceSwitch(proc, name):
+    revert(proc)
+    pull(proc)
+    
     switch(proc, name)
     if current(proc) != name:
         track(proc, name)
     if current(proc) != name:
         create(proc, name)
-    revert(proc, name)
+        
+    revert(proc)
+    pull(proc)
+    
+def forceReCreate(proc, name):
+    if name == 'master': return False
+    revert(proc)
+    switch(proc, 'master')
+    delete(proc, name)
+    track(proc, name)
+    return current(proc) == name

@@ -29,5 +29,9 @@ class ssh(object):
             
         return stdout.readlines(), stderr
     
-    def close(self):
-        self.client.close()       
+    def __enter__(self):
+        return self     
+        
+    def __exit__(self, _type, _value, _traceback):
+        self.client.close()
+        print 'SSH disconnected'

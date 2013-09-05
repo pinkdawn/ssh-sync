@@ -6,9 +6,7 @@ class sftp(object):
         key = paramiko.RSAKey.from_private_key_file(pkey, pwd)
         self.t.connect(username=user, pkey=key)
         self._sftp = paramiko.SFTPClient.from_transport(self.t)
-        
-    def close(self):
-        self.t.close()
+        print 'SFTP connected'
         
     def put(self, src, dest):
         self._sftp.put(src, dest)
@@ -32,3 +30,10 @@ class sftp(object):
         except:
             self.mkdirs(os.path.dirname(path))
             self.mkdir(path)
+
+    def __enter__(self):
+        return self     
+        
+    def __exit__(self, _type, _value, _traceback):
+        self.t.close()
+        print 'SFTP disconnected'
