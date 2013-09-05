@@ -22,10 +22,10 @@ class ssh(object):
     def process(self, cmd):
         if self.prefix:
             if self.debug: print '%s && %s' % (self.prefix, cmd)
-            stdin, stdout, stderr = self.client.exec_command('%s && %s' % (self.prefix, cmd))
+            _, stdout, stderr = self.client.exec_command('%s && %s' % (self.prefix, cmd))
         else:
             if self.debug: print cmd
-            stdin, stdout, stderr = self.client.exec_command(cmd)
+            _, stdout, stderr = self.client.exec_command(cmd)
             
         return stdout.readlines(), stderr
     

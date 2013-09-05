@@ -1,8 +1,7 @@
-import sys
 
 def current(proc):
     cmd = 'git branch'
-    out, error = proc.process(cmd)
+    out, _ = proc.process(cmd)
     for line in out:
         if line and line.startswith('*'):
             return line.replace('*', '').strip()
@@ -11,7 +10,7 @@ def current(proc):
 
 def switch(proc, to):
     cmd = 'git checkout -f %s' % to
-    out, error = proc.process(cmd)
+    proc.process(cmd)
     
     print 'switch to branch [%s]' % to
     
@@ -35,8 +34,10 @@ def create(proc, name):
     print 'create branch [%s]' % name
     
 def force_switch(proc, name):
+    revert(proc, name)
     switch(proc, name)
     if current(proc) != name:
         track(proc, name)
     if current(proc) != name:
         create(proc, name)
+    revert(proc, name)

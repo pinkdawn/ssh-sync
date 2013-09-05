@@ -5,25 +5,25 @@ class sftp(object):
         self.t = paramiko.Transport((host, 22))
         key = paramiko.RSAKey.from_private_key_file(pkey, pwd)
         self.t.connect(username=user, pkey=key)
-        self.sftp = paramiko.SFTPClient.from_transport(self.t)
+        self._sftp = paramiko.SFTPClient.from_transport(self.t)
         
     def close(self):
         self.t.close()
         
     def put(self, src, dest):
-        self.sftp.put(src, dest)
+        self._sftp.put(src, dest)
         print 'upload to remote: [%s]' % dest
         
     def remove(self, path):
-        self.sftp.remove(path)
+        self._sftp.remove(path)
         print 'remove from remote: [%s]' % path
         
     def chdir(self, path):
-        self.sftp.chdir(path)
+        self._sftp.chdir(path)
         print 'change to directory: [%s]' % path
         
     def mkdir(self, path):
-        self.sftp.mkdir(path)
+        self._sftp.mkdir(path)
         print 'create directory: [%s]' % path
         
     def mkdirs(self, path):

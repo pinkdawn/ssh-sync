@@ -1,8 +1,9 @@
         
 def ls(proc):
     cmd = 'git status -s --untracked-files=all'
-    out, error = proc.process(cmd)
+    out, _ = proc.process(cmd)
     changed, added, deleted = [], [], []
+    
     for line in out:
         line = line.strip()        
         if not line: continue
