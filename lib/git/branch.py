@@ -62,6 +62,7 @@ def forceReCreate(proc, name):
     if name == 'master': return False
     revert(proc)
     switch(proc, 'master')
+    pull(proc)
     delete(proc, name)
     track(proc, name)
     return current(proc) == name

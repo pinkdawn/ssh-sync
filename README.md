@@ -16,5 +16,6 @@ sync git code to remote server using ssh
 * goto `doc/run.cmd`, change the location to your `project_home`
 * run `run.cmd` to sync code files to remote server
 * run `run.cmd -r` to delete the test branch, and pull the branch from git remote, and track the new branch. (this is useful when local test over, create & push to new branch)
+
 **To Do**
 * now only support using private key to ssh login, can easily modified to use username & password
