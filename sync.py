@@ -17,7 +17,7 @@ def setupLocal():
     return cmd()  
     
 def syncBranch(local_branch, remote):
-    git.branch.forceRevert(remote)
+    git.branch.revert(remote)
     if local_branch != git.branch.current(remote):
         git.branch.forceSwitch(remote, local_branch)
         

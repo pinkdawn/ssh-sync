@@ -21,6 +21,8 @@ def revert(proc):
     cmd = 'git clean -f -d'    # remove un-versioned files
     proc.process(cmd)
     
+    pull(proc)
+    
     print 'reverted old changes'
     
 def track(proc, name):
@@ -45,10 +47,6 @@ def pull(proc):
     cmd = 'git pull'    
     proc.process(cmd)
 
-def forceRevert(proc):
-    revert(proc)
-    pull(proc)
-
 def forceSwitch(proc, name):
     switch(proc, name)
     if current(proc) != name:
@@ -56,7 +54,7 @@ def forceSwitch(proc, name):
     if current(proc) != name:
         create(proc, name)
         
-    forceRevert(proc)
+    revert(proc)
     
 def forceReCreate(proc, name):
     if name == 'master': return False
