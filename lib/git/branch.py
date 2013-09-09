@@ -45,18 +45,18 @@ def pull(proc):
     cmd = 'git pull'    
     proc.process(cmd)
 
-def forceSwitch(proc, name):
+def forceRevert(proc):
     revert(proc)
     pull(proc)
-    
+
+def forceSwitch(proc, name):
     switch(proc, name)
     if current(proc) != name:
         track(proc, name)
     if current(proc) != name:
         create(proc, name)
         
-    revert(proc)
-    pull(proc)
+    forceRevert(proc)
     
 def forceReCreate(proc, name):
     if name == 'master': return False
