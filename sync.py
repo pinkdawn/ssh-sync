@@ -4,7 +4,9 @@ from config import *
 from lib.cmd import cmd
 from lib.sftp import sftp
 from lib.ssh import ssh
-from lib import git
+from datetime import datetime
+
+from lib import git, cert
 import os, sys
 
 def setupSsh():
@@ -39,7 +41,8 @@ def syncFiles(changed, added, deleted):
 
 if __name__=="__main__":
     local = setupLocal()
-        
+    print 'Start at --------- ' + str(datetime.now())[:19]
+
     with setupSsh() as remote:    
         local_branch = git.branch.current(local)
         
@@ -48,3 +51,5 @@ if __name__=="__main__":
             syncFiles(*git.status.ls(local))
         elif len(sys.argv) > 1 and sys.argv[1] == '-r':
             git.branch.forceReCreate(remote, local_branch)
+        elif len(sys.argv) > 1 and sys.argv[1] == '-s':
+            cert.replace(remote, ssl_path, ssl_domain, ssl_crt, ssl_key)

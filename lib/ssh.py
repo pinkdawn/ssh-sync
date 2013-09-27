@@ -26,8 +26,15 @@ class ssh(object):
         else:
             if self.debug: print cmd
             _, stdout, stderr = self.client.exec_command(cmd)
+        
+        out = stdout.readlines()
+        err = stderr.read()
+        
+        if self.debug:
+            print out
+            print err
             
-        return stdout.readlines(), stderr
+        return out, err
     
     def __enter__(self):
         return self     
