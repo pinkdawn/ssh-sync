@@ -12,6 +12,10 @@ def ls(proc):
         
         if 'A' in op or '??' in op:
             added.append(fname)
+        elif 'R' in op:
+            # handle rename, e.g. [R a.html -> b.html] here fname is [a.html -> b.html]
+            added.append(fname[fname.rfind(' ')+1:].strip())
+            deleted.append(fname[:fname.find(' ')+1].strip())
         elif 'D' in op:
             deleted.append(fname)
         elif 'M' in op:
