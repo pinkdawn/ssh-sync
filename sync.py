@@ -4,10 +4,11 @@ from config import *
 from lib.cmd import cmd
 from lib.sftp import sftp
 from lib.ssh import ssh
+from lib.cache import ModifyCache
 from datetime import datetime
 
 from lib import git, cert
-import os, sys, pickle, tempfile
+import os, sys
 
 def setupSsh():
     remote = ssh(host, user, pwd, pkey)
@@ -23,37 +24,16 @@ def syncBranch(local_branch, remote):
     if local_branch != git.branch.current(remote):
         git.branch.forceSwitch(remote, local_branch)
 
-def loadLastModified():
-    try:
-        f = os.path.join(tempfile.gettempdir(), 'last_modified')
-        return pickle.load(open( f, "rb"))
-    except IOError:
-        return {}
-
-def saveLastModified(last_modifed, _incr=[]):
-    for change in _incr:
-        last_modifed.update(change)
-    f = os.path.join(tempfile.gettempdir(), 'last_modified')
-    pickle.dump(last_modifed, open(f, "wb"))
-
-def getNewFiles(files, last_modified):
-    result = []
-    modified = {}
-    for f in files:
-        if (f not in last_modified or last_modified[f] != os.path.getmtime(f)):
-            result.append(f)
-            modified[f] = os.path.getmtime(f)
-    return result, modified
+def getNewFiles(files, cache):
+    return [x for x in files if cache.set(x, os.path.getmtime(x))]
 
 def syncNewFiles(changed, added, deleted):
-    last_modifed = loadLastModified()
-
-    _changed, _m1 = getNewFiles(changed, last_modifed)
-    _added, _m2 = getNewFiles(added, last_modifed)
-    _deleted, _m3 = getNewFiles(deleted, last_modifed)
-    syncFiles(_changed,_added,_deleted)
-
-    saveLastModified(last_modifed, [_m1, _m2, _m3])
+    with ModifyCache() as cache:
+        syncFiles(
+            getNewFiles(changed, cache),
+            getNewFiles(added, cache),
+            getNewFiles(deleted, cache)
+        )
 
 def syncFiles(changed, added, deleted):
     with sftp(host, user, pwd, pkey) as ftp:
@@ -83,9 +63,9 @@ if __name__=="__main__":
 
             if len(sys.argv) == 1:
                 syncBranch(local_branch, remote)
-                syncFiles(*git.status.ls(local))
+                syncNewFiles(*git.status.ls(local))
             elif len(sys.argv) > 1 and sys.argv[1] == '-r':
                 git.branch.forceReCreate(remote, local_branch)
-                saveLastModified({})
+                ModifyCache.clear()
             elif len(sys.argv) > 1 and sys.argv[1] == '-s':
                 cert.replace(remote, ssl_path, ssl_domain, ssl_crt, ssl_key)
