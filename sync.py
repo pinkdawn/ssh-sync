@@ -30,27 +30,30 @@ def loadLastModified():
     except IOError:
         return {}
 
-def saveLastModified(last_modifed):
+def saveLastModified(last_modifed, _incr=[]):
+    for change in _incr:
+        last_modifed.update(change)
     f = os.path.join(tempfile.gettempdir(), 'last_modified')
     pickle.dump(last_modifed, open(f, "wb"))
 
 def getNewFiles(files, last_modified):
     result = []
+    modified = {}
     for f in files:
         if (f not in last_modified or last_modified[f] != os.path.getmtime(f)):
             result.append(f)
-            last_modified[f] = os.path.getmtime(f)
-    return result
+            modified[f] = os.path.getmtime(f)
+    return result, modified
 
 def syncNewFiles(changed, added, deleted):
     last_modifed = loadLastModified()
 
-    syncFiles(getNewFiles(changed, last_modifed),
-              getNewFiles(added, last_modifed),
-              getNewFiles(deleted, last_modifed),
-              )
+    _changed, _m1 = getNewFiles(changed, last_modifed)
+    _added, _m2 = getNewFiles(added, last_modifed)
+    _deleted, _m3 = getNewFiles(deleted, last_modifed)
+    syncFiles(_changed,_added,_deleted)
 
-    saveLastModified(last_modifed)
+    saveLastModified(last_modifed, [_m1, _m2, _m3])
 
 def syncFiles(changed, added, deleted):
     with sftp(host, user, pwd, pkey) as ftp:
