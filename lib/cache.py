@@ -1,6 +1,7 @@
 import os, tempfile, pickle
 from copy import deepcopy
 
+
 class ModifyCache():
     def __init__(self):
         self.cache = ModifyCache.load()
@@ -21,8 +22,11 @@ class ModifyCache():
 
     @staticmethod
     def clear(fname = 'last_modified'):
-        f = os.path.join(tempfile.gettempdir(), fname)
-        os.remove(f)
+        try:
+            f = os.path.join(tempfile.gettempdir(), fname)
+            os.remove(f)
+        except:
+            pass
 
     def set(self, key, val):
         if key not in self.cache or self.cache[key] != val:

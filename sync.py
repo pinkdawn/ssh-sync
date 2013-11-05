@@ -5,9 +5,9 @@ from lib.cmd import cmd
 from lib.sftp import sftp
 from lib.ssh import ssh
 from lib.cache import ModifyCache
+from lib import git, cert
 from datetime import datetime
 
-from lib import git, cert
 import os, sys
 
 def setupSsh():
@@ -63,7 +63,7 @@ if __name__=="__main__":
 
             if len(sys.argv) == 1:
                 syncBranch(local_branch, remote)
-                syncNewFiles(*git.status.ls(local))
+                syncFiles(*git.status.ls(local))
             elif len(sys.argv) > 1 and sys.argv[1] == '-r':
                 git.branch.forceReCreate(remote, local_branch)
                 ModifyCache.clear()

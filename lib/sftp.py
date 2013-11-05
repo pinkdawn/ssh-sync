@@ -1,5 +1,6 @@
 import paramiko, os
 
+
 class sftp(object):
     def __init__(self, host, user, pwd, pkey):
         self.t = paramiko.Transport((host, 22))
