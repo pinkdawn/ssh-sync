@@ -24,8 +24,14 @@ def syncBranch(local_branch, remote):
     if local_branch != git.branch.current(remote):
         git.branch.forceSwitch(remote, local_branch)
 
+def modified(file):
+    try:
+        return os.path.getmtime(file)
+    except:
+        return 0
+
 def getNewFiles(files, cache):
-    return [x for x in files if cache.set(x, os.path.getmtime(x))]
+    return [x for x in files if cache.set(x, modified(x))]
 
 def syncNewFiles(changed, added, deleted):
     with ModifyCache() as cache:
@@ -42,7 +48,10 @@ def syncFiles(changed, added, deleted):
             ftp.put(f, f)
         
         for f in deleted:
-            ftp.remove(f)
+            try:
+                ftp.remove(f)
+            except:
+                pass # already removed
         
         for f in added:
             try:
