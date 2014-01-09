@@ -11,19 +11,19 @@ class sftp(object):
         
     def put(self, src, dest):
         self._sftp.put(src, dest)
-        print 'upload to remote: [%s]' % dest
+        print 'put: [%s]' % dest
         
     def remove(self, path):
         self._sftp.remove(path)
-        print 'remove from remote: [%s]' % path
+        print 'remove: [%s]' % path
         
     def chdir(self, path):
         self._sftp.chdir(path)
-        print 'change to directory: [%s]' % path
+        print 'cd: [%s]' % path
         
     def mkdir(self, path):
         self._sftp.mkdir(path)
-        print 'create directory: [%s]' % path
+        print 'mkdir: [%s]' % path
         
     def mkdirs(self, path):
         try:

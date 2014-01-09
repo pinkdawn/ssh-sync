@@ -3,25 +3,26 @@ from copy import deepcopy
 
 
 class ModifyCache():
-    def __init__(self):
-        self.cache = ModifyCache.load()
+    def __init__(self, fname):
+        self.f = fname
+        self.cache = ModifyCache.load(self.f)
         self._cache = deepcopy(self.cache)
 
     @staticmethod
-    def load(fname = 'last_modified'):
+    def load(fname):
         try:
             f = os.path.join(tempfile.gettempdir(), fname)
             return pickle.load(open(f, "rb"))
         except IOError:
             return {}
 
-    def save(self, fname = 'last_modified'):
-        f = os.path.join(tempfile.gettempdir(), fname)
+    def save(self):
+        f = os.path.join(tempfile.gettempdir(), self.f)
         pickle.dump(self._cache, open(f, "wb"))
         self.cache = deepcopy(self._cache)
 
     @staticmethod
-    def clear(fname = 'last_modified'):
+    def clear(fname):
         try:
             f = os.path.join(tempfile.gettempdir(), fname)
             os.remove(f)
@@ -33,6 +34,12 @@ class ModifyCache():
             self._cache[key] = val
             return True
         return False
+
+    def allKeys(self):
+        return self._cache.keys()
+
+    def removeKey(self, key):
+        del self._cache[key]
 
     def __enter__(self):
         return self
