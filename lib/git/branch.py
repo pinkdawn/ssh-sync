@@ -32,12 +32,14 @@ def track(proc, name):
     print 'pull branch [%s] from master' % name
     
 def create(proc, name):
+    switch(proc, 'master')
     cmd = 'git checkout -b %s' % name
     proc.process(cmd)
     
     print 'create branch [%s]' % name
 
 def delete(proc, name):
+    if name.lower() == 'master': return
     cmd = 'git branch -D %s' % name
     proc.process(cmd)
     
