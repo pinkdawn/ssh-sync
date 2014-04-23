@@ -30,9 +30,11 @@ def track(proc, name):
     proc.process(cmd)
     
     print 'pull branch [%s] from master' % name
-    
+
 def create(proc, name):
     switch(proc, 'master')
+    pull(proc)
+
     cmd = 'git checkout -b %s' % name
     proc.process(cmd)
     

@@ -79,6 +79,11 @@ def syncFiles(changed, added, deleted):
                 ftp.mkdirs(os.path.split(remote_git + '/' +f)[0])
                 ftp.put(f, remote_git + '/' +f)
 
+def clearCache():
+    ModifyCache.clear('added')
+    ModifyCache.clear('changed')
+    ModifyCache.clear('deleted')
+
 if __name__=="__main__":
     local = setupLocal()
     print 'Start at --------- ' + str(datetime.now())[:19]
@@ -92,10 +97,9 @@ if __name__=="__main__":
             if len(sys.argv) == 1:
                 syncBranch(local_branch, remote)
                 syncFiles(*git.status.ls(local))
+                clearCache()
             elif len(sys.argv) > 1 and sys.argv[1] == '-r':
                 git.branch.forceReCreate(remote, local_branch)
-                ModifyCache.clear('added')
-                ModifyCache.clear('changed')
-                ModifyCache.clear('deleted')
+                clearCache()
             elif len(sys.argv) > 1 and sys.argv[1] == '-s':
                 cert.replace(remote, ssl_path, ssl_domain, ssl_crt, ssl_key)
